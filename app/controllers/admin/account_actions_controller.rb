@@ -21,7 +21,7 @@ module Admin
       account_action.save!
 
       if account_action.with_report?
-        redirect_to admin_reports_path, notice: I18n.t('admin.reports.processed_msg', id: params[:report_id])
+        redirect_to admin_reports_path, notice: I18n.t('admin.reports.processed_msg', id: resource_params[:report_id])
       else
         redirect_to admin_account_path(@account.id)
       end
@@ -34,7 +34,8 @@ module Admin
     end
 
     def resource_params
-      params.require(:admin_account_action).permit(:type, :report_id, :warning_preset_id, :text, :send_email_notification, :include_statuses)
+      params
+        .expect(admin_account_action: [:type, :report_id, :warning_preset_id, :text, :send_email_notification, :include_statuses])
     end
   end
 end

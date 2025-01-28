@@ -33,6 +33,11 @@ be:
           attributes:
             data:
               malformed: дэфармаваны
+        list_account:
+          attributes:
+            account_id:
+              taken: ужо ў спісе
+          must_be_following: мусіць быць падпісаным уліковым запісам
         status:
           attributes:
             reblog:
@@ -53,3 +58,7 @@ be:
             position:
               elevated: не можа быць вышэй за вашу бягучую ролю
               own_role: не можа быць зменены з вашай бягучай роляй
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: не можа ўключаць у сябе падзеі на якія ў вас няма правоў

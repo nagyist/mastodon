@@ -1,12 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
+
 import { setupBrowserNotifications } from 'mastodon/actions/notifications';
 import Mastodon from 'mastodon/containers/mastodon';
-import { store } from 'mastodon/store/configureStore';
 import { me } from 'mastodon/initial_state';
+import * as perf from 'mastodon/performance';
 import ready from 'mastodon/ready';
+import { store } from 'mastodon/store';
 
-const perf = require('mastodon/performance');
+import { isProduction } from './utils/environment';
 
 /**
  * @returns {Promise<void>}
@@ -18,10 +19,11 @@ function main() {
     const mountNode = document.getElementById('mastodon');
     const props = JSON.parse(mountNode.getAttribute('data-props'));
 
-    ReactDOM.render(<Mastodon {...props} />, mountNode);
+    const root = createRoot(mountNode);
+    root.render(<Mastodon {...props} />);
     store.dispatch(setupBrowserNotifications());
 
-    if (process.env.NODE_ENV === 'production' && me && 'serviceWorker' in navigator) {
+    if (isProduction() && me && 'serviceWorker' in navigator) {
       const { Workbox } = await import('workbox-window');
       const wb = new Workbox('/sw.js');
       /** @type {ServiceWorkerRegistration} */
@@ -33,7 +35,7 @@ function main() {
         console.error(err);
       }
 
-      if (registration) {
+      if (registration && 'Notification' in window && Notification.permission === 'granted') {
         const registerPushNotifications = await import('mastodon/actions/push_notifications');
 
         store.dispatch(registerPushNotifications.register());
